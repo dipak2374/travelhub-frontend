@@ -164,7 +164,7 @@ const Checkout = () => {
         <div className="card p-6">
           <h2 className="font-semibold mb-4">Guest Details</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <input type="text" placeholder="Full Name" required className="input-field" value={guestDetails.name}
+            <input type="text" placeholder="Full Name" required minLength={2} pattern="^[A-Za-z\s]{2,50}$" className="input-field" value={guestDetails.name}
               onChange={(e) => setGuestDetails({ ...guestDetails, name: e.target.value })} />
             <input type="email" placeholder="Email" required className="input-field" value={guestDetails.email}
               onChange={(e) => setGuestDetails({ ...guestDetails, email: e.target.value })} />
@@ -175,6 +175,7 @@ const Checkout = () => {
               maxLength={10}
               placeholder="Phone"
               required
+              title="Enter exactly 10 digits"
               className="input-field sm:col-span-2"
               value={guestDetails.phone}
               onChange={(e) => setGuestDetails({ ...guestDetails, phone: e.target.value.replace(/\D/g, '').slice(0, 10) })}

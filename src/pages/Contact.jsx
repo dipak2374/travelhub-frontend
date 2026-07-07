@@ -56,6 +56,7 @@ const Contact = () => {
               type="text"
               placeholder="Your name"
               required
+              minLength={2}
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               className="input-field w-full"
@@ -72,6 +73,7 @@ const Contact = () => {
               rows={5}
               placeholder="How can we help?"
               required
+              minLength={10}
               value={form.message}
               onChange={(e) => setForm({ ...form, message: e.target.value })}
               className="input-field w-full resize-none"

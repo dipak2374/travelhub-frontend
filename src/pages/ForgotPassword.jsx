@@ -102,6 +102,8 @@ const ForgotPassword = () => {
                 <input
                   type="text"
                   maxLength={6}
+                  minLength={6}
+                  pattern="[0-9]{6}"
                   required
                   className="input-field text-center text-2xl tracking-widest"
                   value={otp}
@@ -128,7 +130,9 @@ const ForgotPassword = () => {
                 <input
                   type="password"
                   required
-                  minLength={6}
+                  minLength={8}
+                  pattern="(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}"
+                  title="Must be at least 8 characters, start with an uppercase letter, and include one special character"
                   className="input-field"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}

@@ -96,6 +96,7 @@ const Login = () => {
                 <input
                   type="password"
                   required
+                  minLength={6}
                   className="input-field"
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}

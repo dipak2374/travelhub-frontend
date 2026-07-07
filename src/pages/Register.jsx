@@ -38,8 +38,10 @@ const Register = () => {
     setForm({ ...form, phone: digitsOnly });
     if (digitsOnly.length > 0 && digitsOnly.length < 10) {
       setPhoneError('Phone number must be exactly 10 digits');
+      e.target.setCustomValidity('Phone number must be exactly 10 digits');
     } else {
       setPhoneError('');
+      e.target.setCustomValidity('');
     }
   };
 
@@ -49,14 +51,17 @@ const Register = () => {
 
     if (nextPassword.length === 0) {
       setPasswordError('');
+      e.target.setCustomValidity('');
       return;
     }
 
     const passwordRegex = /^(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/;
     if (!passwordRegex.test(nextPassword)) {
       setPasswordError('Password must be at least 8 characters, start with an uppercase letter, and include one special character');
+      e.target.setCustomValidity('Password must be at least 8 characters, start with an uppercase letter, and include one special character');
     } else {
       setPasswordError('');
+      e.target.setCustomValidity('');
     }
   };
 
@@ -137,8 +142,10 @@ const Register = () => {
               <input
                 type="tel"
                 inputMode="numeric"
+                required
                 pattern="[0-9]{10}"
                 maxLength={10}
+                title="Enter exactly 10 digits"
                 className="input-field"
                 value={form.phone}
                 onChange={handlePhoneChange}
@@ -150,6 +157,9 @@ const Register = () => {
               <input
                 type="password"
                 required
+                minLength={8}
+                pattern="(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}"
+                title="Must be at least 8 characters, start with an uppercase letter, and include one special character"
                 className="input-field"
                 value={form.password}
                 onChange={handlePasswordChange}

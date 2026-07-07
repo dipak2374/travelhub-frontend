@@ -97,6 +97,9 @@ const Profile = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
                 <input 
                   type="text" 
+                  required
+                  minLength={2}
+                  pattern="^[A-Za-z\s]{2,50}$"
                   className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500" 
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })} 
@@ -115,9 +118,13 @@ const Profile = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone Number</label>
                 <input 
                   type="tel" 
+                  inputMode="numeric"
+                  pattern="[0-9]{10}"
+                  maxLength={10}
+                  title="Enter exactly 10 digits"
                   className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500" 
                   value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })} 
+                  onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, '').slice(0, 10) })} 
                 />
               </div>
             </div>
