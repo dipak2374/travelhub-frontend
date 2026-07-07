@@ -22,6 +22,15 @@ api.interceptors.response.use(
         window.location.href = '/login';
       }
     }
+
+    if (!error.response) {
+      console.error('API Network Error:', error.message);
+      error.customMessage = 'Unable to reach the server. Please check your internet connection or try again later.';
+    } else {
+      const serverMessage = error.response?.data?.message || error.response?.data?.error || error.message;
+      error.customMessage = serverMessage || 'Request failed';
+    }
+
     return Promise.reject(error);
   }
 );
