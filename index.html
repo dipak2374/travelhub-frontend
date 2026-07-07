@@ -11,6 +11,26 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      (function () {
+        try {
+          const params = new URLSearchParams(location.search);
+          const api = params.get('force_api');
+          const socket = params.get('force_socket');
+          if (api) {
+            // Allow quick runtime override for testing (e.g. ?force_api=https://example.com/api)
+            window.__API_URL__ = api;
+            console.log('Runtime override: window.__API_URL__ =', api);
+          }
+          if (socket) {
+            window.__SOCKET_URL__ = socket;
+            console.log('Runtime override: window.__SOCKET_URL__ =', socket);
+          }
+        } catch (err) {
+          console.warn('API override init error', err);
+        }
+      })();
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

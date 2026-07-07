@@ -7,7 +7,8 @@ export const loginUser = createAsyncThunk('auth/login', async (credentials, { re
     localStorage.setItem('token', data.token);
     return data;
   } catch (error) {
-    return rejectWithValue(error.response?.data?.message || 'Login failed');
+    const message = error.customMessage || error.response?.data?.message || 'Login failed';
+    return rejectWithValue(message);
   }
 });
 
@@ -17,7 +18,8 @@ export const verifyOTPUser = createAsyncThunk('auth/verifyOTP', async (credentia
     localStorage.setItem('token', data.token);
     return data;
   } catch (error) {
-    return rejectWithValue(error.response?.data?.message || 'Invalid OTP');
+    const message = error.customMessage || error.response?.data?.message || 'Invalid OTP';
+    return rejectWithValue(message);
   }
 });
 
@@ -27,7 +29,8 @@ export const registerUser = createAsyncThunk('auth/register', async (userData, {
     localStorage.setItem('token', data.token);
     return data;
   } catch (error) {
-    return rejectWithValue(error.response?.data?.message || error.message || 'Registration failed');
+    const message = error.customMessage || error.response?.data?.message || error.message || 'Registration failed';
+    return rejectWithValue(message);
   }
 });
 
@@ -37,7 +40,8 @@ export const fetchUser = createAsyncThunk('auth/fetchUser', async (_, { rejectWi
     return data.user;
   } catch (error) {
     localStorage.removeItem('token');
-    return rejectWithValue(error.response?.data?.message || error.message || 'Unable to fetch user');
+    const message = error.customMessage || error.response?.data?.message || error.message || 'Unable to fetch user';
+    return rejectWithValue(message);
   }
 });
 
