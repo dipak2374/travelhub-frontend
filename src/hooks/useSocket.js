@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 import { useDispatch, useSelector } from 'react-redux';
 import { addNotification } from '../redux/slices/notificationSlice';
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'https://travelhub-backend.onrender.com';
 
 export const useSocket = () => {
   const socketRef = useRef(null);
