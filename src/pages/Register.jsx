@@ -23,6 +23,8 @@ const Register = () => {
     description: '',
     address: '',
   });
+  const [phoneError, setPhoneError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.auth);
@@ -30,9 +32,50 @@ const Register = () => {
   const isAgency = form.role === 'travel_agency';
   const isPartner = ['car_rental_partner', 'bus_operator', 'airline_partner'].includes(form.role);
 
+  const handlePhoneChange = (e) => {
+    const rawValue = e.target.value;
+    const digitsOnly = rawValue.replace(/\D/g, '').slice(0, 10);
+    setForm({ ...form, phone: digitsOnly });
+    if (digitsOnly.length > 0 && digitsOnly.length < 10) {
+      setPhoneError('Phone number must be exactly 10 digits');
+    } else {
+      setPhoneError('');
+    }
+  };
+
+  const handlePasswordChange = (e) => {
+    const nextPassword = e.target.value;
+    setForm({ ...form, password: nextPassword });
+
+    if (nextPassword.length === 0) {
+      setPasswordError('');
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/;
+    if (!passwordRegex.test(nextPassword)) {
+      setPasswordError('Password must be at least 8 characters, start with an uppercase letter, and include one special character');
+    } else {
+      setPasswordError('');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch(clearError());
+
+    if (!/^\d{10}$/.test(form.phone)) {
+      setPhoneError('Phone number must be exactly 10 digits');
+      toast.error('Phone number must be exactly 10 digits');
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/;
+    if (!passwordRegex.test(form.password)) {
+      setPasswordError('Password must be at least 8 characters, start with an uppercase letter, and include one special character');
+      toast.error('Password must be at least 8 characters, start with an uppercase letter, and include one special character');
+      return;
+    }
 
     const payload = {
       name: form.name,
@@ -91,13 +134,27 @@ const Register = () => {
             </div>
             <div>
               <label className="block text-sm font-medium mb-1.5">Phone</label>
-              <input type="tel" className="input-field" value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+              <input
+                type="tel"
+                inputMode="numeric"
+                pattern="[0-9]{10}"
+                maxLength={10}
+                className="input-field"
+                value={form.phone}
+                onChange={handlePhoneChange}
+              />
+              {phoneError && <p className="text-red-500 text-sm mt-1">{phoneError}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium mb-1.5">Password</label>
-              <input type="password" required minLength={6} className="input-field" value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })} />
+              <input
+                type="password"
+                required
+                className="input-field"
+                value={form.password}
+                onChange={handlePasswordChange}
+              />
+              {passwordError && <p className="text-red-500 text-sm mt-1">{passwordError}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium mb-1.5">Account Type</label>

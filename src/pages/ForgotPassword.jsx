@@ -13,6 +13,11 @@ const ForgotPassword = () => {
 
   const handleSendOTP = async (e) => {
     e.preventDefault();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
     setLoading(true);
     try {
       await authAPI.sendOTP(email);
@@ -42,6 +47,11 @@ const ForgotPassword = () => {
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/;
+    if (!passwordRegex.test(newPassword)) {
+      toast.error('Password must be at least 8 characters, start with an uppercase letter, and include one special character');
+      return;
+    }
     setLoading(true);
     try {
       await authAPI.resetPassword({ email, otp, newPassword });

@@ -65,7 +65,8 @@ const Home = () => {
   const handleNewsletterSubmit = (event) => {
     event.preventDefault();
 
-    if (!newsletterEmail || !newsletterEmail.includes('@')) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(newsletterEmail.trim())) {
       setNewsletterStatus({ type: 'error', message: 'Please enter a valid email address.' });
       return;
     }

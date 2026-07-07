@@ -6,6 +6,16 @@ const Contact = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!form.name.trim() || form.name.trim().length < 2) {
+      return alert('Please enter your full name');
+    }
+    if (!emailRegex.test(form.email.trim())) {
+      return alert('Please enter a valid email address');
+    }
+    if (!form.message.trim() || form.message.trim().length < 10) {
+      return alert('Please enter a message with at least 10 characters');
+    }
     alert('Thanks for reaching out! We will get back to you soon.');
   };
 

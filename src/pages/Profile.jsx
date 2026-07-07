@@ -18,6 +18,18 @@ const Profile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const nameRegex = /^[a-zA-Z\s]{2,50}$/;
+    const phoneRegex = /^\d{10}$/;
+
+    if (!nameRegex.test(form.name.trim())) {
+      toast.error('Please enter a valid full name');
+      return;
+    }
+    if (form.phone && !phoneRegex.test(form.phone)) {
+      toast.error('Phone number must be exactly 10 digits');
+      return;
+    }
+
     setLoading(true);
     try {
       await authAPI.updateProfile(form);

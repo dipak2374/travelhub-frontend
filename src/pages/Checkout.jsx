@@ -114,8 +114,8 @@ const Checkout = () => {
     if (!guestDetails.email || !emailRegex.test(guestDetails.email.trim())) {
       return toast.error('Please enter a valid email address');
     }
-    if (!guestDetails.phone || guestDetails.phone.replace(/[\s+-]/g, '').length < 10) {
-      return toast.error('Please enter a valid phone number (at least 10 digits)');
+    if (!/^\d{10}$/.test(guestDetails.phone.replace(/[\s+-]/g, ''))) {
+      return toast.error('Please enter a valid phone number (exactly 10 digits)');
     }
 
     setLoading(true);
@@ -168,8 +168,17 @@ const Checkout = () => {
               onChange={(e) => setGuestDetails({ ...guestDetails, name: e.target.value })} />
             <input type="email" placeholder="Email" required className="input-field" value={guestDetails.email}
               onChange={(e) => setGuestDetails({ ...guestDetails, email: e.target.value })} />
-            <input type="tel" placeholder="Phone" required className="input-field sm:col-span-2" value={guestDetails.phone}
-              onChange={(e) => setGuestDetails({ ...guestDetails, phone: e.target.value })} />
+            <input
+              type="tel"
+              inputMode="numeric"
+              pattern="[0-9]{10}"
+              maxLength={10}
+              placeholder="Phone"
+              required
+              className="input-field sm:col-span-2"
+              value={guestDetails.phone}
+              onChange={(e) => setGuestDetails({ ...guestDetails, phone: e.target.value.replace(/\D/g, '').slice(0, 10) })}
+            />
           </div>
         </div>
 
