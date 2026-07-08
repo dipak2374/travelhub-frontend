@@ -2,7 +2,10 @@ import axios from 'axios';
 
 // Allow runtime override via `window.__API_URL__` when available.
 // This lets you change the backend URL without rebuilding the app.
-const API_URL = (typeof window !== 'undefined' && window.__API_URL__) || import.meta.env.VITE_API_URL || 'https://web-production-2c9e0.up.railway.app/api';
+const API_URL =
+  (typeof window !== 'undefined' && window.__API_URL__) ||
+  import.meta.env.VITE_API_URL ||
+  'https://travelhub-backend.onrender.com/api';
 
 const api = axios.create({
   baseURL: API_URL,
