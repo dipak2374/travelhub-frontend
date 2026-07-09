@@ -203,10 +203,18 @@ const RefundPage = () => {
     }
   };
 
-  const filteredRefunds = refunds.filter(r =>
-    r._id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (r.item?.name || r.item?.title || '').toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredRefunds = (refunds || []).filter((r) => {
+    const query = searchQuery.toLowerCase();
+    const id = (r?._id || r?.id || '').toString().toLowerCase();
+    const title = (r?.item?.name || r?.item?.title || r?.bookingType || '').toString().toLowerCase();
+    const reference = (r?.bookingReference || '').toString().toLowerCase();
+
+    return (
+      id.includes(query) ||
+      title.includes(query) ||
+      reference.includes(query)
+    );
+  });
 
   const getRefundStatus = (booking) => {
     return booking.refundStatus || (booking.status === 'refunded' ? 'completed' : 'pending');
@@ -442,18 +450,19 @@ const RefundPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredRefunds.map((refund) => {
+                  {filteredRefunds.map((refund, idx) => {
                     const refundStatus = getRefundStatus(refund);
                     const statusConfig = REFUND_STATUSES[refundStatus];
                     const Icon = getRefundIcon(refundStatus);
+                    const shortId = refund?._id ? refund._id.slice(-8).toUpperCase() : (refund?.id ? refund.id.toString().slice(-8).toUpperCase() : `REF-${idx + 1}`);
 
                     return (
-                      <tr key={refund._id} className="border-b border-gray-100 hover:bg-gray-50/30 transition-colors">
+                      <tr key={refund._id || refund.id || idx} className="border-b border-gray-100 hover:bg-gray-50/30 transition-colors">
                         <td className="px-6 py-4">
-                          <div className="text-sm font-mono text-gray-900">{refund._id.slice(-8).toUpperCase()}</div>
+                          <div className="text-sm font-mono text-gray-900">{shortId}</div>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="text-sm text-gray-900">{refund.item?.name || refund.item?.title || refund.bookingType}</div>
+                          <div className="text-sm text-gray-900">{refund.item?.name || refund.item?.title || refund.bookingType || 'Unknown item'}</div>
                         </td>
                         <td className="px-6 py-4">
                           <div className="text-sm font-semibold text-gray-900">
