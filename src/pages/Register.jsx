@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
-import { registerUser, clearError } from '../redux/slices/authSlice';
+import { registerUser, clearError, googleSignIn } from '../redux/slices/authSlice';
 import { ROLE_LABELS, getDashboardPath } from '../utils/constants';
+import GoogleAuthButton from '../components/Buttons/GoogleAuthButton';
 
 const roles = ['customer', 'travel_agency', 'car_rental_partner', 'bus_operator', 'airline_partner'];
 
@@ -62,6 +63,17 @@ const Register = () => {
     } else {
       setPasswordError('');
       e.target.setCustomValidity('');
+    }
+  };
+
+  const handleGoogleSuccess = async (response) => {
+    dispatch(clearError());
+    const result = await dispatch(googleSignIn({ idToken: response.credential }));
+    if (googleSignIn.fulfilled.match(result)) {
+      toast.success('Signed in with Google');
+      navigate(getDashboardPath(result.payload.user.role));
+    } else {
+      toast.error(result.payload || 'Google sign-in failed');
     }
   };
 
@@ -207,6 +219,9 @@ const Register = () => {
             <button type="submit" disabled={loading} className="btn-primary w-full">
               {loading ? 'Creating account...' : 'Create Account'}
             </button>
+            <div className="mt-4">
+              <GoogleAuthButton onSuccess={handleGoogleSuccess} />
+            </div>
           </form>
 
           <p className="text-center text-sm text-gray-500 mt-6">

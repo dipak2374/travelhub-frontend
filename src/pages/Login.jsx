@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import { loginUser, clearError, googleSignIn } from '../redux/slices/authSlice';
-import { useEffect } from 'react';
+import GoogleAuthButton from '../components/Buttons/GoogleAuthButton';
 
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -53,8 +53,7 @@ const Login = () => {
     }
   };
 
-  const handleCredentialResponse = async (response) => {
-    if (!response?.credential) return;
+  const handleGoogleSuccess = async (response) => {
     dispatch(clearError());
     const result = await dispatch(googleSignIn({ idToken: response.credential }));
     if (googleSignIn.fulfilled.match(result)) {
@@ -65,42 +64,6 @@ const Login = () => {
       toast.error(result.payload || 'Google sign-in failed');
     }
   };
-
-  useEffect(() => {
-    window.__handleGoogleCredential = handleCredentialResponse;
-    const loadGsi = () => {
-      const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-      if (!clientId) return;
-      const mount = document.getElementById('googleSignInDiv');
-      if (!mount) return;
-      if (window.google && window.google.accounts && window.google.accounts.id) {
-        try {
-          window.google.accounts.id.initialize({ client_id: clientId, callback: (resp) => window.__handleGoogleCredential(resp) });
-          window.google.accounts.id.renderButton(mount, { theme: 'outline', size: 'large', width: '100%' });
-          return;
-        } catch (e) {
-          // fallthrough to load script
-        }
-      }
-
-      if (!document.getElementById('gsi-script')) {
-        const script = document.createElement('script');
-        script.id = 'gsi-script';
-        script.src = 'https://accounts.google.com/gsi/client';
-        script.async = true;
-        script.onload = () => {
-          if (window.google && window.google.accounts && window.google.accounts.id) {
-            window.google.accounts.id.initialize({ client_id: clientId, callback: (resp) => window.__handleGoogleCredential(resp) });
-            window.google.accounts.id.renderButton(mount, { theme: 'outline', size: 'large', width: '100%' });
-          }
-        };
-        document.head.appendChild(script);
-      }
-    };
-
-    loadGsi();
-    return () => { if (window.__handleGoogleCredential === handleCredentialResponse) window.__handleGoogleCredential = null; };
-  }, []);
 
   const handleOTPVerify = async (e) => {
     e.preventDefault();
@@ -156,7 +119,9 @@ const Login = () => {
               <button type="submit" disabled={loading} className="btn-primary w-full">
                 {loading ? 'Signing in...' : 'Sign In'}
               </button>
-              <div id="googleSignInDiv" className="mt-4 flex justify-center"></div>
+              <div className="mt-4">
+                <GoogleAuthButton onSuccess={handleGoogleSuccess} />
+              </div>
             </form>
           ) : (
             <form onSubmit={handleOTPVerify} className="space-y-5">
