@@ -3,6 +3,7 @@ import api from './api';
 export const authAPI = {
   register: (data) => api.post('/auth/register', data),
   login: (data) => api.post('/auth/login', data),
+  googleSignIn: (data) => api.post('/auth/google', data),
   sendOTP: (email) => api.post('/auth/otp/send', { email }),
   verifyOTP: (data) => api.post('/auth/otp/verify', data),
   resetPassword: (data) => api.post('/auth/password/reset', data),

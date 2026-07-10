@@ -12,6 +12,17 @@ export const loginUser = createAsyncThunk('auth/login', async (credentials, { re
   }
 });
 
+export const googleSignIn = createAsyncThunk('auth/google', async (payload, { rejectWithValue }) => {
+  try {
+    const { data } = await authAPI.googleSignIn(payload);
+    localStorage.setItem('token', data.token);
+    return data;
+  } catch (error) {
+    const message = error.customMessage || error.response?.data?.message || 'Google sign-in failed';
+    return rejectWithValue(message);
+  }
+});
+
 export const verifyOTPUser = createAsyncThunk('auth/verifyOTP', async (credentials, { rejectWithValue }) => {
   try {
     const { data } = await authAPI.verifyOTP(credentials);
@@ -99,6 +110,17 @@ const authSlice = createSlice({
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || action.error?.message || 'Registration failed';
+      })
+      .addCase(googleSignIn.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(googleSignIn.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.isAuthenticated = true;
+      })
+      .addCase(googleSignIn.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
         state.user = action.payload;
