@@ -10,6 +10,10 @@ const GoogleAuthButton = ({ onSuccess, label = 'Continue with Google', className
 
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
     const isClientIdValid = clientId && !/your_google(_client_id)?|your_google_client_id_here|your_google_client_id/i.test(clientId);
+    const isDev = import.meta.env.DEV;
+    const missingMessage = isDev
+      ? 'Google sign-in is not configured yet. Set a valid VITE_GOOGLE_CLIENT_ID in client/.env.'
+      : 'Google sign-in is not configured for production. Ask the administrator to configure VITE_GOOGLE_CLIENT_ID.';
 
     const handleCredentialResponse = async (response) => {
       if (!response?.credential) return;
@@ -23,7 +27,7 @@ const GoogleAuthButton = ({ onSuccess, label = 'Continue with Google', className
     window.__handleGoogleCredential = handleCredentialResponse;
 
     if (!isClientIdValid) {
-      mount.innerHTML = '<p class="text-sm text-gray-500">Google sign-in is not configured yet. Set a valid VITE_GOOGLE_CLIENT_ID in client/.env.</p>';
+      mount.innerHTML = `<p class="text-sm text-gray-500">${missingMessage}</p>`;
       return undefined;
     }
 
