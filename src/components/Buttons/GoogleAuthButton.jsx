@@ -9,10 +9,15 @@ const GoogleAuthButton = ({ onSuccess, label = 'Continue with Google', className
     if (!mount) return undefined;
 
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-    const isClientIdValid = clientId && !/your_google(_client_id)?|your_google_client_id_here|your_google_client_id/i.test(clientId);
     const isDev = import.meta.env.DEV;
+    const isClientIdMissing = !clientId;
+    const isClientIdPlaceholder = !!clientId && /your_google(_client_id)?|your_google_client_id_here|your_google_client_id/i.test(clientId);
+    const isClientIdValid = !isClientIdMissing && !isClientIdPlaceholder;
     const missingMessage = isDev
       ? 'Google sign-in is not configured yet. Set a valid VITE_GOOGLE_CLIENT_ID in client/.env.'
+      : 'Google sign-in is not configured for production. Ask the administrator to configure VITE_GOOGLE_CLIENT_ID.';
+    const placeholderMessage = isDev
+      ? 'Google sign-in is using a placeholder client ID. Update VITE_GOOGLE_CLIENT_ID in client/.env.'
       : 'Google sign-in is not configured for production. Ask the administrator to configure VITE_GOOGLE_CLIENT_ID.';
 
     const handleCredentialResponse = async (response) => {
@@ -27,7 +32,12 @@ const GoogleAuthButton = ({ onSuccess, label = 'Continue with Google', className
     window.__handleGoogleCredential = handleCredentialResponse;
 
     if (!isClientIdValid) {
-      mount.innerHTML = `<p class="text-sm text-gray-500">${missingMessage}</p>`;
+      const message = isClientIdMissing ? missingMessage : placeholderMessage;
+      if (isDev) {
+        mount.innerHTML = `<p class="text-sm text-gray-500">${message}</p>`;
+      } else {
+        console.warn(`GoogleAuthButton: ${message}`);
+      }
       return undefined;
     }
 
