@@ -12,13 +12,6 @@ const MainLayout = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      {isLocalhost && remoteApiUrl && (
-        <div className="bg-yellow-100 border border-yellow-300 text-yellow-900 px-4 py-3 text-sm text-center">
-          Localhost detected, but <code>VITE_API_URL</code> is set to a remote backend.<br />
-          The app is currently configured to use <strong>http://localhost:5000/api</strong> for local development.
-          If you want to test against a deployed backend, update <code>VITE_API_URL</code> accordingly.
-        </div>
-      )}
       {isLocalhost && invalidGoogleClientId && (
         <div className="bg-red-100 border border-red-300 text-red-900 px-4 py-3 text-sm text-center">
           Google Sign-In is not configured for local development. Set <code>VITE_GOOGLE_CLIENT_ID</code> to your Google OAuth client ID in <code>client/.env</code> and make sure it is a real client ID, not a placeholder.
