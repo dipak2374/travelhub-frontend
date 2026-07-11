@@ -26,16 +26,23 @@ const GoogleAuthButton = ({ onSuccess, label = 'Continue with Google', className
       return undefined;
     }
 
-    if (window.google?.accounts?.id) {
-      window.google.accounts.id.initialize({
-        client_id: clientId,
-        callback: (response) => window.__handleGoogleCredential(response),
-      });
+    const renderGoogleButton = () => {
+      if (!window.google?.accounts?.id || !mount) return;
+      if (!window.__googleAuthButtonInitialized) {
+        window.google.accounts.id.initialize({
+          client_id: clientId,
+          callback: (response) => window.__handleGoogleCredential(response),
+        });
+        window.__googleAuthButtonInitialized = true;
+      }
       window.google.accounts.id.renderButton(mount, {
         theme: 'outline',
         size: 'large',
-        width: '100%',
       });
+    };
+
+    if (window.google?.accounts?.id) {
+      renderGoogleButton();
       return undefined;
     }
 
@@ -44,20 +51,11 @@ const GoogleAuthButton = ({ onSuccess, label = 'Continue with Google', className
       script.id = 'gsi-script';
       script.src = 'https://accounts.google.com/gsi/client';
       script.async = true;
-      script.onload = () => {
-        if (window.google?.accounts?.id) {
-          window.google.accounts.id.initialize({
-            client_id: clientId,
-            callback: (response) => window.__handleGoogleCredential(response),
-          });
-          window.google.accounts.id.renderButton(mount, {
-            theme: 'outline',
-            size: 'large',
-            width: '100%',
-          });
-        }
-      };
+      script.onload = renderGoogleButton;
       document.head.appendChild(script);
+    } else {
+      const existingScript = document.getElementById('gsi-script');
+      existingScript?.addEventListener('load', renderGoogleButton);
     }
 
     return () => {

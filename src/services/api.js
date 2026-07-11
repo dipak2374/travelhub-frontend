@@ -1,16 +1,18 @@
 import axios from 'axios';
 
-// Allow runtime override via `window.__API_URL__` when available.
-// This lets you change the backend URL without rebuilding the app.
-const DEFAULT_API_URL =
-  (typeof window !== 'undefined' && window.location.hostname === 'localhost')
-    ? 'http://localhost:5000/api'
-    : 'https://travelhub-backend.onrender.com/api';
+// Use localhost backend during local development, even if VITE_API_URL is set to another value.
+// This avoids accidentally pointing the browser to a deployed backend while testing locally.
+const isLocalhost =
+  typeof window !== 'undefined' &&
+  ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+const LOCAL_API_URL = 'http://localhost:5000/api';
+const PRODUCTION_API_URL = 'https://travelhub-backend.onrender.com/api';
+const DEFAULT_API_URL = isLocalhost ? LOCAL_API_URL : PRODUCTION_API_URL;
 
 const API_URL =
   (typeof window !== 'undefined' && window.__API_URL__) ||
-  import.meta.env.VITE_API_URL ||
-  DEFAULT_API_URL;
+  (isLocalhost ? LOCAL_API_URL : import.meta.env.VITE_API_URL || PRODUCTION_API_URL);
 
 const api = axios.create({
   baseURL: API_URL,
