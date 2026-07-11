@@ -10,9 +10,23 @@ const LOCAL_API_URL = 'http://localhost:5000/api';
 const PRODUCTION_API_URL = 'https://travelhub-backend.onrender.com/api';
 const DEFAULT_API_URL = isLocalhost ? LOCAL_API_URL : PRODUCTION_API_URL;
 
+const apiUrlFromEnv = import.meta.env.VITE_API_URL;
 const API_URL =
   (typeof window !== 'undefined' && window.__API_URL__) ||
-  (isLocalhost ? LOCAL_API_URL : import.meta.env.VITE_API_URL || PRODUCTION_API_URL);
+  (isLocalhost ? LOCAL_API_URL : apiUrlFromEnv || PRODUCTION_API_URL);
+
+if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production') {
+  if (isLocalhost) {
+    console.info(`[API] localhost detected, using backend URL: ${API_URL}`);
+    if (apiUrlFromEnv && !apiUrlFromEnv.includes('localhost')) {
+      console.warn(
+        `[API] VITE_API_URL is set to a remote backend (${apiUrlFromEnv}) while running on localhost. Local backend ${LOCAL_API_URL} will be used instead.`
+      );
+    }
+  } else {
+    console.info(`[API] production/browser backend URL: ${API_URL}`);
+  }
+}
 
 const api = axios.create({
   baseURL: API_URL,
